@@ -1,80 +1,80 @@
 import User from "../models/userModels.js";
 
-export const signup= async (req,res)=>{
-try{
-    const {name,dob,phone,email,username,password}=req.body;
-    const existingUser= await User.findOne({email})
-    if(existingUser){
-      res.status(400).json({success:false,message:'user already exist'})
-        return
+export const signup = async (req, res) => {
+    try {
+        const { name, dob, phone, email, username, password } = req.body;
+        const existingUser = await User.findOne({ email })
+        if (existingUser) {
+            res.status(400).json({ success: false, message: 'user already exist' })
+            return
+        }
+        if (!name || !dob) {
+            res.send('')
+        }
+
+
+
+        const user = await User.create({ name, dob, phone, email, username, password })
+        console.log(user);
+        res.status(201).json({ success: true, message: 'signup success', data: user })
+    } catch (error) {
+        console.log(error);
+
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
     }
-    if(!name||!dob){
-        res.send('')
-    }
 
-
-
-   const user = await   User.create({name,dob,phone ,email,username,password})
-   console.log(user);
-   res.status(201).json({success:true,message:'signup success',data:user})
-}catch(error){
-    console.log(error);
-
-    res.status(500).json({
-        success:false,
-        message:error.message
-    });
 }
 
-}
 
 
-
-export const login = async (req,res) => {
+export const login = async (req, res) => {
 
     try {
 
-       const { username, password } = req.body;
+        const { username, password } = req.body;
 
-       console.log("Received username:", username);
+        console.log("Received username:", username);
 
-       const user = await User.findOne({ username });
+        const user = await User.findOne({ username });
 
-       console.log("Found user:", user);
+        console.log("Found user:", user);
 
-        if(!user){
+        if (!user) {
             return res.status(404).json({
-                success:false,
-                message:"User not found"
+                success: false,
+                message: "User not found"
             });
         }
 
-        if(user.password !== password){
+        if (user.password !== password) {
             return res.status(401).json({
-                success:false,
-                message:"Wrong password"
+                success: false,
+                message: "Wrong password"
             });
         }
 
         res.status(200).json({
-            success:true,
-            message:"Login successful",
-            data:user
+            success: true,
+            message: "Login successful",
+            data: user
         });
 
-    } catch(error){
+    } catch (error) {
 
         console.log(error);
 
         res.status(500).json({
-            success:false,
-            message:error.message
+            success: false,
+            message: error.message
         });
     }
 }
 
 //to retrive data from sign up details toward to profile
-export const getProfile = async (req,res) => {
+export const getProfile = async (req, res) => {
 
     try {
 
@@ -83,26 +83,33 @@ export const getProfile = async (req,res) => {
         const user = await User.findById(userId);
 
         res.status(200).json({
-            success:true,
-            data:user
+            success: true,
+            data: user
         });
 
-    } catch(error){
+    } catch (error) {
 
         res.status(500).json({
-            success:false,
-            message:error.message
+            success: false,
+            message: error.message
         });
     }
 }
 
 //updating current profile and database
-export const updateProfile = async (req,res) => {
+export const updateProfile = async (req, res) => {
 
     try {
 
-        const { _id, name, dob, email, username, phone } = req.body;
-
+        const {
+            _id,
+            name,
+            dob,
+            email,
+            username,
+            phone,
+            budgetLimit
+        } = req.body;
         const user = await User.findByIdAndUpdate(
             _id,
             {
@@ -110,22 +117,23 @@ export const updateProfile = async (req,res) => {
                 dob,
                 email,
                 username,
-                phone
+                phone,
+                budgetLimit
             },
             { returnDocument: 'after' }
         );
 
         res.status(200).json({
-            success:true,
-            data:user
+            success: true,
+            data: user
         });
         console.log("Updated User:", user);
 
-    } catch(error){
+    } catch (error) {
 
         res.status(500).json({
-            success:false,
-            message:error.message
+            success: false,
+            message: error.message
         });
     }
 }
